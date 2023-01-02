@@ -1,4 +1,4 @@
-from ..database.database import DatabaseManager
+from database.database import DatabaseManager
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import sys
@@ -18,25 +18,31 @@ class CreateBookmarksTableCommand:
 
 
 class AddBookmarkCommand:
-    def execute(title: str, url: str, memo: str = None):
+    def execute(self, data: dict):
         db.add('bookmarks', {
-            "title": title,
-            "url": url,
-            "memo": memo,
+            "title": data["title"],
+            "url": data["url"],
+            "memo": data["memo"],
             "date_added": datetime.now(ZoneInfo("Asia/Tokyo")).isoformat()
-
         })
         return('Adding Bookmark has completed successfully')
 
 
-class LIstBookmarksCommand:
-    def execute(self, order_by: str = "data_added"):
-        return db.select('bookmarks', order_by=order_by).fetchall()
+class ListBookmarksCommand:
+    def __init__(self, order_by: str = "date_added") -> None:
+        self.order_by = order_by
+
+    def execute(self):
+        """
+        ブックマークの一覧を取得
+        引数で並び順を指定
+        """
+        return db.select('bookmarks', order_by=self.order_by).fetchall()
 
 
 class DeleteBookmarkCommand:
-    def execute(self, id: str):
-        db.delete('bookmarks', {"id": id})
+    def execute(self, data):
+        db.delete('bookmarks', {"id": data})
         return "Bookmark deleted successfully!"
 
 

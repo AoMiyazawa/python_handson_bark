@@ -34,12 +34,11 @@ class DatabaseManager:
         データベースにレコードを追加
         INSERT INTO {tablename}
         {data,keys}
-        VALUES data.values
+        VALUES data.vlues
         '''
         placeholders = ','.join('?'*len(data))
         columns_names = ','.join(data.keys())
-        columns_values = tuple(data.values)
-
+        columns_values = tuple(data.values())
         self._execute(statemanet=f'''
             INSERT INTO {table_name}
             ({columns_names})
@@ -59,7 +58,7 @@ class DatabaseManager:
     def select(self, table_name, criteria=None, order_by=None):
         criteria = criteria or {}
 
-        query = f'SELECT * FORM {table_name}'
+        query = f'SELECT * FROM {table_name} '
 
         if criteria:
             placeholders = [f'{column}=?' for column in criteria.keys()]
@@ -67,4 +66,5 @@ class DatabaseManager:
             query += select_criteria
         if order_by:
             query += f'ORDER BY {order_by}'
+        print(query)
         return self._execute(statemanet=query, values=tuple(criteria.values()))
